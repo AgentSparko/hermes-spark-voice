@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spark-calld"
+version = "0.1.0"
+description = "Telegram audio/video call daemon: LFM3-Audio realtime voice with Hermes as the brain"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "py-tgcalls>=3.0.0,<4",
+  "kurigram>=2.2,<3",
+  "tgcrypto>=1.2; platform_python_implementation == 'CPython'",
+  "websockets>=12,<16",
+  "httpx>=0.27,<1",
+  "numpy>=1.26",
+  "pyyaml>=6",
+  "pillow>=10",
+  "huggingface_hub>=0.25",
+]
+
+[project.optional-dependencies]
+matrix = ["matrix-nio>=0.24", "aiortc>=1.9", "av>=11"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+spark-calld = "spark_calld.main:main"
+
+[tool.setuptools.packages.find]
+include = ["spark_calld*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

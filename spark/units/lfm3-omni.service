@@ -1,0 +1,19 @@
+[Unit]
+Description=LFM3-Omni-2B llama-server (vision/video/audio understanding) for Hermes
+After=network.target
+
+[Service]
+EnvironmentFile=-%h/.hermes-spark-voice/env
+ExecStart=%h/.hermes-spark-voice/bin/llama-server \
+  -m %h/.hermes-spark-voice/models/omni.gguf \
+  --mmproj %h/.hermes-spark-voice/models/omni-mmproj.gguf \
+  --host 127.0.0.1 --port ${LFM3_OMNI_PORT} \
+  --ctx-size ${LFM3_OMNI_CTX} --parallel 1 \
+  -ngl 999 --jinja --flash-attn on --reasoning off --no-warmup \
+  --alias LFM3-Omni-2B ${LFM3_OMNI_EXTRA}
+Restart=on-failure
+RestartSec=3
+Nice=5
+
+[Install]
+WantedBy=default.target

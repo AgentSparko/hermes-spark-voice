@@ -1,0 +1,13 @@
+[Unit]
+Description=Hermes Telegram call daemon (LFM3-Audio realtime <-> Telegram calls)
+After=network-online.target lfm3-audio.service
+Wants=lfm3-audio.service
+
+[Service]
+EnvironmentFile=-%h/.hermes-spark-voice/env
+ExecStart=%h/.hermes-spark-voice/venv/bin/spark-calld run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

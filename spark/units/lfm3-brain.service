@@ -1,0 +1,18 @@
+[Unit]
+Description=LFM3-1.7B llama-server (agent brain, tool calling) for Hermes
+After=network.target
+
+[Service]
+EnvironmentFile=-%h/.hermes-spark-voice/env
+ExecStart=%h/.hermes-spark-voice/bin/llama-server \
+  -m %h/.hermes-spark-voice/models/brain.gguf \
+  --host 127.0.0.1 --port ${LFM3_BRAIN_PORT} \
+  --ctx-size ${LFM3_BRAIN_CTX} --parallel ${LFM3_BRAIN_PARALLEL} \
+  -ngl 999 --jinja --flash-attn on --temp 0.1 --top-k 50 --repeat-penalty 1.1 \
+  --alias LFM3-1.7B ${LFM3_BRAIN_EXTRA}
+Restart=on-failure
+RestartSec=3
+Nice=5
+
+[Install]
+WantedBy=default.target

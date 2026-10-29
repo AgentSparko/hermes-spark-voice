@@ -1,0 +1,59 @@
+name: spark-voice
+version: 0.1.0
+description: "Local LFM3-Audio speech for Hermes on a DGX Spark: lfm3-audio STT/TTS providers (Telegram voice notes in and out), Telegram call daemon control tools, and model-status tools. Talks to llama-server over HTTP; no cloud."
+author: AgentSparko
+kind: standalone
+license: MIT
+homepage: https://github.com/AgentSparko/hermes-spark-voice
+manifest_version: 2
+platforms:
+  - linux
+  - macos
+provides_tools:
+  - voice_call_status
+  - voice_call_hangup
+  - voice_call_say
+  - spark_voice_models
+provides_hooks:
+  - on_session_end
+config_schema:
+  audio_url:
+    type: string
+    default: "http://127.0.0.1:8181"
+    description: "llama-server that serves LFM3-Audio-2B (/tts, /v1/chat/completions with input_audio)."
+  omni_url:
+    type: string
+    default: "http://127.0.0.1:8182"
+    description: "llama-server that serves LFM3-Omni-2B (optional, vision/video review)."
+  brain_url:
+    type: string
+    default: "http://127.0.0.1:8183"
+    description: "llama-server that serves LFM3-1.7B (optional, when Qwen is not the Hermes brain)."
+  calld_url:
+    type: string
+    default: "http://127.0.0.1:8797"
+    description: "Control endpoint of the Telegram call daemon (spark-calld)."
+  voice:
+    type: string
+    default: "female"
+    description: "Default LFM3-Audio voice: female or male (ignored when speaker_ref is set)."
+  speaker_ref:
+    type: string
+    default: ""
+    description: "Path to a 5-15 s WAV used as the speaker reference for every TTS call (voice cloning)."
+  language:
+    type: string
+    default: "English"
+    description: "Language name used in the ASR/TTS prompts (English, Finnish, German, ...)."
+  timeout:
+    type: integer
+    default: 180
+    description: "HTTP timeout in seconds for one synthesis or transcription."
+  front_desk:
+    type: string
+    default: "on"
+    description: "on = LFM3 shapes voice notes into a brief for the agent and speaks a short plain summary of long answers (full text still goes to the chat); off = verbatim STT/TTS."
+  summary_threshold:
+    type: integer
+    default: 350
+    description: "Answers longer than this many characters (or with lists/code) are summarized before being spoken."

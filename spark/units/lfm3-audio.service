@@ -1,0 +1,19 @@
+[Unit]
+Description=LFM3-Audio-2B llama-server (ASR, TTS, /v1/realtime) for Hermes
+After=network.target
+
+[Service]
+EnvironmentFile=-%h/.hermes-spark-voice/env
+ExecStart=%h/.hermes-spark-voice/bin/llama-server \
+  -m %h/.hermes-spark-voice/models/audio.gguf \
+  --mmproj %h/.hermes-spark-voice/models/audio-mmproj.gguf \
+  --host 127.0.0.1 --port ${LFM3_AUDIO_PORT} \
+  --ctx-size ${LFM3_AUDIO_CTX} --parallel ${LFM3_AUDIO_PARALLEL} \
+  -ngl 999 --jinja --flash-attn on --no-warmup \
+  --alias LFM3-Audio-2B ${LFM3_AUDIO_EXTRA}
+Restart=on-failure
+RestartSec=3
+Nice=5
+
+[Install]
+WantedBy=default.target
