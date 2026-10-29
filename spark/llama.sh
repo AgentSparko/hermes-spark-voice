@@ -13,9 +13,9 @@ mkdir -p "$PREFIX/bin" "$PREFIX/src"
 log(){ printf '\033[1;34m[llama]\033[0m %s\n' "$*"; }
 die(){ printf '\033[1;31m[llama] %s\033[0m\n' "$*" >&2; exit 1; }
 
-have_new_enough(){ # $1 = llama-server path
-  local v; v="$("$1" --version 2>&1 | grep -oE 'b[0-9]+' | head -1 || true)"
-  [[ -n "$v" && "${v#b}" -ge "${MIN_TAG#b}" ]]
+have_new_enough(){ # $1 = llama-server path; llama.cpp prints "(bNNNN)" from a tag, "(build NNNN, commit ...)" from a branch
+  local n; n="$("$1" --version 2>&1 | grep -oE 'b[0-9]+|build [0-9]+' | head -1 | grep -oE '[0-9]+' || true)"
+  [[ -n "$n" && "$n" -ge "${MIN_TAG#b}" ]]
 }
 
 if [[ -x "$PREFIX/bin/llama-server" ]] && have_new_enough "$PREFIX/bin/llama-server" && [[ -z "${LLAMA_FORCE:-}" ]]; then
