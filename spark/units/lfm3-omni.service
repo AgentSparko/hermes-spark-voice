@@ -10,10 +10,15 @@ ExecStart=%h/.hermes-spark-voice/bin/llama-server \
   --host 127.0.0.1 --port ${LFM3_OMNI_PORT} \
   --ctx-size ${LFM3_OMNI_CTX} --parallel 1 \
   -ngl 999 --jinja --flash-attn on --reasoning off --no-warmup \
-  --alias LFM3-Omni-2B ${LFM3_OMNI_EXTRA}
+  --alias LFM3-Omni-2B
 Restart=on-failure
 RestartSec=3
 Nice=5
+
+# Optional extra flags: add them with a drop-in ->  systemctl --user edit lfm3-omni.service
+#   [Service]
+#   ExecStart=
+#   ExecStart=...your full command line plus the extra flags...
 
 [Install]
 WantedBy=default.target

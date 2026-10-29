@@ -10,10 +10,15 @@ ExecStart=%h/.hermes-spark-voice/bin/llama-server \
   --host 127.0.0.1 --port ${LFM3_AUDIO_PORT} \
   --ctx-size ${LFM3_AUDIO_CTX} --parallel ${LFM3_AUDIO_PARALLEL} \
   -ngl 999 --jinja --flash-attn on --no-warmup \
-  --alias LFM3-Audio-2B ${LFM3_AUDIO_EXTRA}
+  --alias LFM3-Audio-2B
 Restart=on-failure
 RestartSec=3
 Nice=5
+
+# Optional extra flags: add them with a drop-in ->  systemctl --user edit lfm3-audio.service
+#   [Service]
+#   ExecStart=
+#   ExecStart=...your full command line plus the extra flags...
 
 [Install]
 WantedBy=default.target
