@@ -19,8 +19,8 @@ def test_config_defaults_and_overrides(tmp_path, monkeypatch):
 
 
 def test_plain_strips_markdown():
-    out = plain("# Title\n\n- **a**\n- `b`\n```py\nx=1\n```\nsee https://x.y/z now")
-    assert out == "Title - a - b (code omitted) see now"
+    out = plain("<think>hmm</think>Reasoning: because.\n\n# Title\n\n- **a**\n- `b`\n```py\nx=1\n```\nsee https://x.y/z at 127.0.0.1:8181 in ~/.hermes/config.yaml via run_agent() now")
+    assert out == "because. Title - a - b the code see at the local address in the file via that now"
 
 
 @pytest.mark.asyncio
@@ -35,6 +35,7 @@ async def test_concierge_brief_and_summary(monkeypatch):
     out = await c.brief(" ".join(["w"] * 20))
     assert out.startswith("Goal: g") and "Original spoken request" in out
     assert await c.spoken_summary("x" * 1000) == "Goal: g 1. a"
+    assert await c.spoken_summary("Done, see /tmp/a.log") == "Goal: g 1. a"   # technical token -> rephrased
     assert await c.spoken_summary("fine.") == "fine."
 
 

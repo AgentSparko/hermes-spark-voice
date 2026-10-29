@@ -25,8 +25,15 @@ mkdir -p "$PREFIX"
 
 # 1) get the repo (this script may be running from curl, so clone/update ourselves)
 SRC="$PREFIX/src/hermes-spark-voice"
-if [[ -d "$SRC/.git" ]]; then git -C "$SRC" fetch -q origin && git -C "$SRC" checkout -q "$REF" && git -C "$SRC" pull -q --ff-only origin "$REF" || true
-else mkdir -p "$PREFIX/src" && git clone -q --branch "$REF" "$REPO" "$SRC"; fi
+if [[ -d "$SRC/.git" ]]; then
+  # best effort: an offline or diverged cache must not stop the install, and each
+  # step is attempted on its own so a failed fetch cannot skip the checkout
+  git -C "$SRC" fetch -q origin || true
+  git -C "$SRC" checkout -q "$REF" || true
+  git -C "$SRC" pull -q --ff-only origin "$REF" || true
+else
+  mkdir -p "$PREFIX/src" && git clone -q --branch "$REF" "$REPO" "$SRC"
+fi
 log "source at $SRC ($(git -C "$SRC" rev-parse --short HEAD))"
 
 # 2) Hermes
