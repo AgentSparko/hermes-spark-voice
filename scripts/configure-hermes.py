@@ -80,6 +80,9 @@ def main() -> int:
     deep_set(cfg, "tts.provider", "lfm3-audio")
     deep_set(cfg, "voice.auto_tts", not args.no_auto_tts)
     deep_set(cfg, "voice.voice_chat_mode", "chained")
+    # the whole reply must reach the provider in ONE call so the front desk can summarize it;
+    # Hermes otherwise splits long replies into 4000-char chunks before synthesis
+    deep_set(cfg, "tts.lfm3-audio.max_text_length", 40000)
     deep_set(cfg, "plugins.entries.spark-voice.enabled", True)
     for key, value in (("audio_url", args.audio_url), ("omni_url", args.omni_url), ("brain_url", args.brain_url),
                        ("voice", args.voice), ("speaker_ref", args.speaker_ref), ("language", args.language)):

@@ -170,3 +170,40 @@ class TestFrontDesk:
         assert seen["payload"]["input"] == "Short spoken version."
         tts.synthesize("- a\n- b", str(tmp_path / "o2.wav"), format="wav", verbatim=True)
         assert seen["payload"]["input"] == "- a\n- b"
+
+
+class TestHumanVoice:
+    def test_strip_reasoning_blocks_and_labels(self):
+        s = concierge.strip_reasoning
+        assert s("<think>long thoughts</think>\nDone, pushed.") == "Done, pushed."
+        assert s("Reasoning: I should check the file first.\n\n**Answer**\nIt is fixed.") == "It is fixed."
+        assert s("reasoning\nWe looked at it.\nIt works.") == "We looked at it.\nIt works."
+        assert s("<reasoning>partial, unterminated") == ""
+        assert s("plain reply") == "plain reply"
+
+    def test_humanize_hides_technical_tokens(self):
+        out = concierge.humanize("Bound 127.0.0.1:8181 and localhost:8642, edited ~/.hermes/config.yaml and plugin/lfm3_audio.py, "
+                                 "called make_handlers() in commit 2a3746b9dc, build b11960 v0.8.0, flag --jinja, see https://x.y/z")
+        for bad in ("127.0.0.1", "8181", "localhost", "config.yaml", "lfm3_audio", "make_handlers", "2a3746b", "b11960", "0.8.0", "--jinja", "http"):
+            assert bad not in out, (bad, out)
+        assert "the local address" in out and "the file" in out and "the commit" in out
+
+    def test_plain_caps_at_a_sentence(self):
+        long = "This is sentence number one. " * 40
+        out = concierge.plain(long)
+        assert len(out) <= concierge.SPOKEN_MAX_CHARS and out.endswith(".")
+        assert concierge.plain("I committed the two PRs locally, let me know if I should push and merge.") == \
+            "I committed the two PRs locally, let me know if I should push and merge."
+
+    def test_technical_short_answer_is_still_rephrased(self, monkeypatch):
+        c = concierge.Concierge(["http://127.0.0.1:1"])
+        monkeypatch.setattr(c, "_chat", lambda s, u, m: "I fixed the config, you can restart the gateway.")
+        assert c.spoken_summary("Patched ~/.hermes/config.yaml (stt.provider).") == "I fixed the config, you can restart the gateway."
+        assert "max_words" not in concierge.SUMMARY_SYSTEM.format(language="English", max_words=60)
+        assert "I committed the two PRs locally" in concierge.SUMMARY_SYSTEM
+
+    def test_summary_fallback_without_server_is_short_and_clean(self):
+        c = concierge.Concierge(["http://127.0.0.1:1"], timeout=1)
+        answer = "<think>x</think>Reasoning: steps.\n\nI edited /etc/hosts and ran setup_env() on 10.0.0.2:22. " + "More detail here. " * 80
+        out = c.spoken_summary(answer)
+        assert len(out) <= concierge.SPOKEN_MAX_CHARS and "10.0.0.2" not in out and "setup_env" not in out and "Reasoning" not in out

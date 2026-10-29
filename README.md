@@ -99,8 +99,13 @@ own `female`/`male` voices are used otherwise.
 
 ## Front desk behaviour
 
-`plugins.entries.spark-voice.config.front_desk: "off"` turns the shaping off (verbatim STT/TTS).
-`summary_threshold` (chars, default 350) decides when an answer is summarized before being spoken.
+The voice says what a colleague would say on the phone: one to three first-person sentences
+("I committed the two PRs locally, let me know if I should push and merge"), never IP addresses, paths,
+file or function names, hashes or code, and never the agent's reasoning preamble. The full answer is in
+the chat. `plugins.entries.spark-voice.config.front_desk: "off"` turns the shaping off (verbatim TTS).
+`summary_threshold` (chars, default 200) decides when an answer is rephrased; shorter answers are only
+cleaned. `configure-hermes.py` also sets `tts.lfm3-audio.max_text_length: 40000` so Hermes hands the
+whole reply to the provider in one piece instead of 4000-char chunks (needed for the summary to apply).
 The text server used for briefs/summaries is `brain_url` (LFM3-1.7B); if it is not running, LFM3-Audio
 in text mode is used; if neither answers, the plugin falls back to markdown stripping.
 

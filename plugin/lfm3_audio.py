@@ -63,7 +63,7 @@ class Settings:
         self.timeout = int(pick("timeout", 180))
         self.brain_url = str(pick("brain_url", "http://127.0.0.1:8183") or "").rstrip("/")
         self.front_desk = str(pick("front_desk", "on")).lower() not in {"off", "false", "0", "no"}
-        self.summary_threshold = int(pick("summary_threshold", 350))
+        self.summary_threshold = int(pick("summary_threshold", 200))
 
     def concierge(self) -> Concierge:
         return Concierge([self.brain_url, self.audio_url], language=self.language, timeout=min(self.timeout, 90))

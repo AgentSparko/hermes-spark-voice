@@ -55,5 +55,5 @@ config_schema:
     description: "on = LFM3 shapes voice notes into a brief for the agent and speaks a short plain summary of long answers (full text still goes to the chat); off = verbatim STT/TTS."
   summary_threshold:
     type: integer
-    default: 350
-    description: "Answers longer than this many characters (or with lists/code) are summarized before being spoken."
+    default: 200
+    description: "Answers longer than this many characters (or containing paths, addresses, code, lists) are rephrased into one to three spoken sentences; the full text still goes to the chat."

@@ -47,7 +47,7 @@ class HermesClient:
             text = ((data.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
             if not text.strip():
                 return Answer("Hermes finished but had nothing to say.", ok=False)
-            spoken = await self._concierge.spoken_summary(text) if self._concierge else plain(text, 600)
+            spoken = await self._concierge.spoken_summary(text) if self._concierge else plain(text)
             return Answer(spoken, full_text=text if want_full else "")
         except httpx.TimeoutException:
             return Answer("Hermes is still working on it; I will tell you when it is done.", ok=False)
